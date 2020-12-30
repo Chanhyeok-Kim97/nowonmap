@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 import time
 import json
 import requests
-# from main import patient_crawl
+#from main import patient_crawl
 
 # Create your views here.
 def main(requests):

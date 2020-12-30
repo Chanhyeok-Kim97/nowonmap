@@ -191,7 +191,7 @@ function searchPlaces() {
     }
     removeMarker(); // 지도에 표시되고 있는 마커를 제거합니다
     if (currCategory == "hospital"){
-        ps.keywordSearch('울산 코로나 진료소',placesSearchCB);
+        ps.keywordSearch('노원 코로나 진료소',placesSearchCB);
     } else if (currCategory == "mask"){
         displayMask(masks)
     }
