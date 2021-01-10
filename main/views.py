@@ -9,6 +9,10 @@ from django.core.mail import send_mail
 import time
 import json
 import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.wait import WebDriverWait
+
 #from main import patient_crawl
 
 # Create your views here.
@@ -263,7 +267,50 @@ def get_patients():
     }
     '''
     ################################# 맞췄다면 여기부턴 변경하지 말 것. ########################################
+    options = Options()
+    options.headless = True
+    browser = webdriver.Chrome(executable_path="./chromedriver.exe", options=options)
+    browser.get("https://www.nowon.kr/corona19/index.do")
+    time.sleep(3)
+    content= browser.find_element_by_css_selector(f"#covid_tab_cont > div > div.accordion-list.c-accordion-list").get_attribute('textContent')
+    # print(content)
+    '''
+    url = "https://www.nowon.kr/corona19/index.do"
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+    }
+    '''
 
+    req = browser.page_source
+    r = req
+
+    soup = BeautifulSoup(r, "html.parser")
+    titles = soup.findAll("div", {"class":"accordion-title"})
+    contents=soup.findAll("div",{"class":"accordion-content"})
+    arr=[]
+    for i in range(10):
+        arr.append(titles[i].text.strip().split('\n'))
+
+
+
+    patients = {}
+    for i in range(10):
+        patients[i+1]={}
+        for j in range(3):
+            if(j==0):
+                patients[i+1]["ID"]=arr[i][j]
+            if(j==1):
+                patients[i+1]["Region"]=arr[i][j]
+            if(j==2):
+                patients[i+1]["Confirmed Date"]=arr[i][j]
+        patients[i+1]["Gender"]=" "
+        patients[i+1]["Age"]=" "
+        patients[i+1]["Current Status"]=" "
+        patients[i+1]["Paths"]=contents[i].text.strip()
+
+
+
+    
     updated_patient = []
     for number, patient_info in patients.items():
         updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
