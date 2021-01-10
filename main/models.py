@@ -39,5 +39,5 @@ class Mask(models.Model):
 
 class Statistics(models.Model):
     name = models.CharField(max_length=255)
-    value = models.IntegerField()
+    value = models.CharField(max_length=30)
     updated_at = models.DateTimeField(auto_now=True, null=True)

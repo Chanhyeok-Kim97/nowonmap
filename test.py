@@ -6,40 +6,53 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
+'''
+url = "https://www.gangnam.go.kr/path.htm"
+####################################################################################################
 
+headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+}
+req = requests.get(url, headers=headers)
+r = req.text
+
+soup = BeautifulSoup(r, "html.parser")
+
+print(soup)
+'''
 options = Options()
 options.headless = True
 browser = webdriver.Chrome(executable_path="./chromedriver.exe", options=options)
-browser.get("https://www.nowon.kr/corona19/index.do")
+browser.get("https://www.gangnam.go.kr/path.htm")
 time.sleep(3)
-content= browser.find_element_by_css_selector(f"#covid_tab_cont > div > div.accordion-list.c-accordion-list").get_attribute('textContent')
+content= browser.find_element_by_css_selector(f"#gnlist").get_attribute('textContent')
 
 req = browser.page_source
 r = req
 
 soup = BeautifulSoup(r, "html.parser")
-titles = soup.findAll("div", {"class":"accordion-title"})
-contents=soup.findAll("div",{"class":"accordion-content"})
-arr=[]
-for i in range(10):
-    arr.append(titles[i].text.strip().split('\n'))
+titles = soup.select("tbody tr")
+
+
+ldata=[]
+
+for i in titles:
+    ldata.append(i.text.strip('\n'))
+
+# print(ldata)
 
 
 
 patients = {}
-for i in range(10):
+for i in range(len(ldata)):
     patients[i+1]={}
-    for j in range(3):
-        if(j==0):
-            patients[i+1]["ID"]=arr[i][j]
-        if(j==1):
-            patients[i+1]["Region"]=arr[i][j]
-        if(j==2):
-            patients[i+1]["Confirmed Date"]=arr[i][j]
+    patients[i+1]["ID"]=i
+    patients[i+1]["Region"]=" "
+    patients[i+1]["Confirmed Date"]='2021-01-01'
     patients[i+1]["Gender"]=" "
     patients[i+1]["Age"]=" "
     patients[i+1]["Current Status"]=" "
-    patients[i+1]["Paths"]=contents[i].text.strip()
+    patients[i+1]["Paths"]=ldata[i]
 
 print(patients)
 # patient_num = 1
@@ -62,7 +75,7 @@ print(patients)
 #         patients[patient_num]["Current Status"] = informations[4]
 
 #         patient_num += 1
-"""
+'''
 patients = {
     1: {
         “ID”: 환자 식별자,
@@ -85,4 +98,3 @@ patients = {
     …
 }
 '''
-"""

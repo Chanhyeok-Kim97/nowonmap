@@ -1,12 +1,12 @@
 // 마커를 담을 배열입니다
 var markers = [];
 
-var defaultx = 37.64973
-var defaulty = 127.077134
+var defaultx = 37.5112018042687
+var defaulty = 127.021653112054
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div
     mapOption = {
         center: new kakao.maps.LatLng(defaultx, defaulty), // 지도의 중심좌표
-        level: 5, // 지도의 확대 레벨
+        level: 6, // 지도의 확대 레벨
     };
 var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
@@ -55,7 +55,7 @@ function placesSearchCB(data, status, pagination) {
 
 // 지도에 마커를 표출하는 함수입니다
 function displayPlaces(places) {
-    addMarker(new kakao.maps.LatLng(places.y, places.x));
+    addMarker(new kakao.maps.LatLng(places.y  , places.x));
     zoomIn();
     map.panTo(new kakao.maps.LatLng(places.y, places.x));
     displayPlaceInfo(places);

@@ -12,12 +12,12 @@ var mon = day.getMonth()+1
 var dt = day.getDate()
 
 // 울산 좌표를 중심으로 map 생성 (각 지역의 중심 좌표를 입력하세요)
-var defaultx = 37.64973
-var defaulty = 127.077134
+var defaultx = 37.5112018042687
+var defaulty = 127.021653112054
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div
     mapOption = {
         center: new kakao.maps.LatLng(defaultx, defaulty), // 지도의 중심좌표
-        level: 5 // 지도의 확대 레벨
+        level: 6 // 지도의 확대 레벨
     }
 var map = new kakao.maps.Map(mapContainer, mapOption) // 지도를 생성합니다
 
@@ -191,7 +191,7 @@ function searchPlaces() {
     }
     removeMarker(); // 지도에 표시되고 있는 마커를 제거합니다
     if (currCategory == "hospital"){
-        ps.keywordSearch('노원 코로나 진료소',placesSearchCB);
+        ps.keywordSearch('강남 코로나 진료소',placesSearchCB);
     } else if (currCategory == "mask"){
         displayMask(masks)
     }
@@ -340,7 +340,7 @@ function displayPatientInfo (y,x,num,visited_date,place_name) {
     content = ''
         + '    <div class="placeinfo pb-0">'
         + '        <div class="ptitle d-flex justify-content-between align-items-center flex-wrap">'
-        + '            <h1 class="m-0 text-center"><strong>' + num + '</strong>번 확진자 동선</h1>'
+        + '            <h1 class="m-0 text-center"><strong>' +'</strong>확진자 동선</h1>'
         + '        </div>'
         + '        <div class="w-100 p-2">'
         + '            <span class="info_content time_at">다녀간 날짜: <strong>' + visited_date + '</strong></span>'

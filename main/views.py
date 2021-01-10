@@ -150,7 +150,7 @@ def get_mask_stores():
     log = "{}: Total searched store {}, Newly registered stores: {}".format(update_time, mask_stores['count'], newly_registered)
     print(log)
     # return mask_stores
-
+'''
 def get_status():
     ####################### 자기 지역의 동선 정보를 업데이트해주는 공식 홈페이지로 변경 ###############################
     url = "https://www.nowon.kr/corona19/index.do"
@@ -200,7 +200,48 @@ def get_status():
     print(statistics)
     log = "{}: Current infected patients {}, Current cured patients: {}".format(updated_at, statistics['infected'],  statistics['cured'])
     print(log)
+'''
+def get_status():
+    ####################### 자기 지역의 동선 정보를 업데이트해주는 공식 홈페이지로 변경 ###############################
+    url = "https://www.gangnam.go.kr/path.htm"
+    headers = {
+   'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+    }
+    options = Options()
+    options.headless = True
+    browser = webdriver.Chrome(
+        executable_path="./chromedriver.exe", options=options)
+    browser.get(url)
+    time.sleep(3)
+    infected = browser.find_element_by_id('counter8')
+    cured = browser.find_element_by_id('counter11')
+    # 목록이 추가되면 수정하기
+    names = ["infected", "cured"]
 
+    ################### values = [‘확진자 수’, ‘완치자 수’] 가 되도록 크롤링해 주세요. ######################
+    values = [str(infected.text), str(cured.text)]
+
+    statistics = {}
+    for i, name in enumerate(names):
+        # value = int(values[i])
+        value=values[i]
+        statistics[name] = value
+        updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if Statistics.objects.filter(name=name):
+            statistic = Statistics.objects.get(name=name)
+            statistic.name = name
+            statistic.value = value
+            statistic.save()
+        else:
+            statistic = Statistics(
+                name=name,
+                value=value,
+            )
+            statistic.save()
+
+    print(statistics)
+    log = "{}: Current infected patients {}, Current cured patients: {}".format(updated_at, statistics['infected'],  statistics['cured'])
+    print(log)
 def get_patients():
     ############################# 각자의 지역에 따라 크롤링을 하셔야 합니다 ##################################
     # url = "http://www.ulsan.go.kr/corona.jsp"
@@ -267,50 +308,43 @@ def get_patients():
     }
     '''
     ################################# 맞췄다면 여기부턴 변경하지 말 것. ########################################
+
     options = Options()
     options.headless = True
     browser = webdriver.Chrome(executable_path="./chromedriver.exe", options=options)
-    browser.get("https://www.nowon.kr/corona19/index.do")
+    browser.get("https://www.gangnam.go.kr/path.htm")
     time.sleep(3)
-    content= browser.find_element_by_css_selector(f"#covid_tab_cont > div > div.accordion-list.c-accordion-list").get_attribute('textContent')
-    # print(content)
-    '''
-    url = "https://www.nowon.kr/corona19/index.do"
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
-    }
-    '''
+    content= browser.find_element_by_css_selector(f"#gnlist").get_attribute('textContent')
 
     req = browser.page_source
     r = req
 
     soup = BeautifulSoup(r, "html.parser")
-    titles = soup.findAll("div", {"class":"accordion-title"})
-    contents=soup.findAll("div",{"class":"accordion-content"})
-    arr=[]
-    for i in range(10):
-        arr.append(titles[i].text.strip().split('\n'))
+    titles = soup.select("tbody tr")
+
+
+    ldata=[]
+
+    for i in titles:
+        ldata.append(i.text.strip('\n'))
+
 
 
 
     patients = {}
-    for i in range(10):
+    for i in range(len(ldata)):
         patients[i+1]={}
-        for j in range(3):
-            if(j==0):
-                patients[i+1]["ID"]=arr[i][j]
-            if(j==1):
-                patients[i+1]["Region"]=arr[i][j]
-            if(j==2):
-                patients[i+1]["Confirmed Date"]=arr[i][j]
+        patients[i+1]["ID"]=i+1
+        patients[i+1]["Region"]=" "
+        patients[i+1]["Confirmed Date"]='2021-01-01'
         patients[i+1]["Gender"]=" "
         patients[i+1]["Age"]=" "
         patients[i+1]["Current Status"]=" "
-        patients[i+1]["Paths"]=contents[i].text.strip()
+        patients[i+1]["Paths"]=ldata[i]
 
 
 
-    
+
     updated_patient = []
     for number, patient_info in patients.items():
         updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
